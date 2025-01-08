@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Click Counter with Chart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .Counter-container {
+            color: aqua;
+            background-color: rgba(233, 233, 233, 0.648);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .counter-box {
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 text-center">
+        <h1>Let's Take a Quick Survey</h1>
+        <p>This website is built to assist in taking surveys</p>
+        <div>
+            <!-- Buttons to count clicks -->
+            <button id="startSurveyBtn" class="btn btn-success">Start Survey</button>
+            <button id="dontStartSurveyBtn" class="btn btn-danger">Don't Start</button>
+        </div>
+        
+        <div class="Counter-container">
+            <div class="counter-box text-primary">
+                Start Survey Button Clicked: <span id="clickCount">0</span> times
+            </div>
+            <div class="counter-box text-danger">
+                Don't Start Button Clicked: <span id="clickCount2">0</span> times
+            </div>
+        </div>
+
+        <canvas id="clickChart" width="400" height="200"></canvas>
+    </div>
+
+    <script>
+        // JavaScript for Start Survey button
+        const clickDisplay1 = document.getElementById('clickCount');
+        const startSurveyBtn = document.getElementById('startSurveyBtn');
+
+        // JavaScript for Don't Start Survey button
+        const clickDisplay2 = document.getElementById('clickCount2');
+        const dontStartSurveyBtn = document.getElementById('dontStartSurveyBtn');
+
+        // Retrieve saved counts from localStorage or initialize to 0
+        let clickCount1 = localStorage.getItem('clickCount1') 
+            ? parseInt(localStorage.getItem('clickCount1')) 
+            : 0;
+
+        let clickCount2 = localStorage.getItem('clickCount2') 
+            ? parseInt(localStorage.getItem('clickCount2')) 
+            : 0;
+
+        // Update the displayed counts
+        clickDisplay1.textContent = clickCount1;
+        clickDisplay2.textContent = clickCount2;
+
+        // Chart.js setup
+        const ctx = document.getElementById('clickChart').getContext('2d');
+        const clickChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Start Survey', "Don't Start"], // Categories for the bars
+                datasets: [{
+                    label: 'Click Counts',
+                    data: [clickCount1, clickCount2], // Initial data
+                    backgroundColor: ['rgba(75, 192, 192, 0.5)', 'rgba(255, 99, 132, 0.5)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Clicks'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Buttons'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Update chart and counts when buttons are clicked
+        startSurveyBtn.addEventListener('click', () => {
+            clickCount1++;
+            clickDisplay1.textContent = clickCount1;
+            localStorage.setItem('clickCount1', clickCount1); // Save to localStorage
+            updateChart();
+        });
+
+        dontStartSurveyBtn.addEventListener('click', () => {
+            clickCount2++;
+            clickDisplay2.textContent = clickCount2;
+            localStorage.setItem('clickCount2', clickCount2); // Save to localStorage
+            updateChart();
+        });
+
+        // Update the chart dynamically
+        function updateChart() {
+            clickChart.data.datasets[0].data = [clickCount1, clickCount2];
+            clickChart.update();
+        }
+    </script>
+</body>
+</html>
